@@ -1,0 +1,8 @@
+[x] Run Parcel on file
+[x] Open this file in VSCode browser
+[X] Render current file
+[] Make sure HMR works
+[] Create React test 
+[] Run one of your files from react-typescript talk as example (FunToggle with talkUtils)
+[] Clean up
+[] Publish

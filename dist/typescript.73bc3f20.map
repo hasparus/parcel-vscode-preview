@@ -1,0 +1,1 @@
+{"version":3,"sources":["index.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA,QAAQ,CAAC,cAAT,CAAwB,MAAxB,EAAiC,SAAjC,GAA6C,wBAA7C","file":"typescript.73bc3f20.map","sourceRoot":"..\\test","sourcesContent":["document.getElementById(\"root\")!.innerHTML = `\n  <h1>Success</h1>\n`;\n"]}

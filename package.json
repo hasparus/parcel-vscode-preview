@@ -1,0 +1,44 @@
+{
+  "name": "parcel-vscode-preview",
+  "displayName": "Parcel Preview",
+  "description": "Get CodeSandbox Current Module View inside of your VSCode",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.30.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:parcelPreview.start"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "parcelPreview.start",
+        "title": "Preview Current File 📃👀"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "yarn run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "test": "yarn run compile && node ./node_modules/vscode/bin/test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.42",
+    "@types/node": "^8.10.25",
+    "@types/parcel-bundler": "^1.10.1",
+    "@types/slash": "^2.0.0",
+    "tslint": "^5.8.0",
+    "typescript": "^3.1.4"
+  },
+  "dependencies": {
+    "parcel-bundler-without-deasync": "^9.99.10",
+    "slash": "^2.0.0",
+    "vscode": "*"
+  }
+}
