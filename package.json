@@ -10,14 +10,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:parcelPreview.start"
+    "onCommand:currentModulePreview.start"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "parcelPreview.start",
-        "title": "Preview Current File 📃👀"
+        "command": "currentModulePreview.start",
+        "title": "Preview Current Module 📃👀"
       }
     ]
   },

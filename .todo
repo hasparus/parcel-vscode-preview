@@ -1,7 +1,11 @@
 [x] Run Parcel on file
 [x] Open this file in VSCode browser
 [X] Render current file
-[] Make sure HMR works
+[ ] Go after user to his current file
+[ ] Show nice spinner when it's loading and error when it doesn't work
+[] Add preset react-ts-default-export (and discover how to add settings) to add HMR
+  // We need index.tsx as root to hold render call, 
+  // and then we expect hot(App) as default export
 [] Create React test 
 [] Run one of your files from react-typescript talk as example (FunToggle with talkUtils)
 [] Clean up

@@ -23,21 +23,17 @@ let server: http.Server | null = null;
 export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log('"parcel-vscode-preview" is now active 🏃👋');
+  console.log('"current-module-preview" is now active 🏃👋');
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand(
-    "parcelPreview.start",
-    () => {
+  context.subscriptions.push(
+    vscode.commands.registerCommand("currentModulePreview.start", () => {
       const devServerPort = 9876;
       const devServerUrl = `http://localhost:${devServerPort}`;
 
       const userFilePath = getCurrentFilePath();
       if (!userFilePath) {
         vscode.window.showErrorMessage(
-          "Try to open Preview with editor tab open"
+          "Couldn't open preview. Is any file open?"
         );
 
         return;
@@ -66,8 +62,10 @@ export function activate(context: vscode.ExtensionContext) {
       server = bundler.serve(devServerPort, false) as http.Server;
 
       const panel = vscode.window.createWebviewPanel(
-        "parcelPreview", // Identifies the type of the webview. Used internally
-        "Parcel Preview", // Title of the panel displayed to the user
+        // Identifies the type of the webview. Used internally
+        "currentModulePreview",
+        // Title of the panel displayed to the user
+        `${path.basename(relativePath)} 👀`,
         vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
         {
           enableScripts: true,
@@ -75,13 +73,16 @@ export function activate(context: vscode.ExtensionContext) {
       );
 
       panel.webview.html = makeWebviewHtml(devServerUrl);
-      panel.webview.onDidReceiveMessage((msg: unknown) =>
-        console.log("->", msg)
-      );
-    }
+      // panel.webview.onDidReceiveMessage(
+      //   (msg: { command: string; text: string }) => {
+      //     switch (msg.command) {
+      //       case "log":
+      //         vscode.window.showInformationMessage(msg.text);
+      //     }
+      //   }
+      // );
+    })
   );
-
-  context.subscriptions.push(disposable);
 }
 
 // this method is called when your extension is deactivated
@@ -99,11 +100,8 @@ function getCurrentFilePath() {
 
   let filePath = editor.document.uri.path;
 
-  console.log({ filePath });
-  console.log(process.platform);
-
   if (/^win/.test(process.platform)) {
-    filePath = filePath.substr(1);
+    return filePath.substr(1);
   }
 
   return filePath;
@@ -118,24 +116,52 @@ function makeWebviewHtml(src: string) {
 				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 			</head>
 			<style>
-				body {
-					margin: 0;
-					overflow: hidden;
+        html, body {
+          height: 100%;
+        }  
+        body {
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
 				}
 				iframe {
 					border: none;
-					width: 100%;
+          width: 100%;
+          height: auto;
+          flex: 1;
 				}
-				html, body, iframe {
-					height: 100%;
-				}
+        footer {
+          padding: 0.5em;
+          font-family: 'Fira Code', 'Hack', Consolas, monospace;
+          background-color: #f5f6fa;
+          color: #2f3640;
+        }
+        a {
+          padding: 1px;
+          color: blue;
+        }
+        a:hover, a:focus {
+          color: white;
+          background: black;
+        }
 			</style>
-		
       <body>
-        Hello
-        <a href="${src}">${src}</a>
-				<iframe src="${src}"><iframe>
-			</body>
+        <iframe src="${src}"></iframe>
+        <footer>
+          <a href="${src}">${src}</a>
+        </footer>  
+      </body>
+      <script>
+      (function() {
+          const vscode = acquireVsCodeApi();
+          vscode.postMessage({
+              command: 'log',
+              text: \`Preview launched. Opening ${src} in the iframe.\`
+          });
+      })();
+      </script>
 		</html>
 	`;
 }
@@ -148,14 +174,22 @@ function makeParcelRootHtml(codePath: string, title = "Parcel Preview") {
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>${title}</title>
+
+        <style>
+          html, body {
+            height: 100%;
+          }  
+          body {
+            margin: 0;
+          }
+        </style>
       </head>
     
       <body>
-        Root
         <div id="root"></div>
-    
         <script src="${codePath}"></script>
       </body>
+
     </html>
   `;
 }

@@ -1,0 +1,17 @@
+{
+  "name": "react-test",
+  "version": "1.0.0",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@types/react": "^16.7.20",
+    "@types/react-dom": "^16.0.11",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-hot-loader": "^4.6.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "sass": "^1.16.1"
+  }
+}
