@@ -165,6 +165,11 @@ declare module "parcel-bundler" {
     }
   }
 
+  interface HttpsInfo {
+    cert: string;
+    key: string;
+  }
+
   class ParcelBundler {
     constructor(
       entryFiles?: string | string[],
@@ -177,11 +182,17 @@ declare module "parcel-bundler" {
 
     bundle(): Promise<ParcelBundler.ParcelBundle>;
 
+    serve(port?: number, https?: false, host?: string): Promise<http.Server>;
+    serve(
+      port: number,
+      https: true | HttpsInfo,
+      host?: string
+    ): Promise<https.Server>;
     serve(
       port?: number,
-      https?: boolean | { cert: string; key: string },
+      https?: boolean | HttpsInfo,
       host?: string
-    ): http.Server | https.Server;
+    ): Promise<http.Server | https.Server>;
   }
 
   export = ParcelBundler;

@@ -8,6 +8,7 @@ import ParcelBundler = require("parcel-bundler-without-deasync");
 import * as http from "http";
 import * as fs from "fs";
 import slash from "slash";
+import { makeWebviewHtml, makeParcelRootHtml } from "./html";
 
 const stat = promisify(fsStat);
 
@@ -26,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
   console.log('"current-module-preview" is now active 🏃👋');
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("currentModulePreview.start", () => {
+    vscode.commands.registerCommand("currentModulePreview.start", async () => {
       const devServerPort = 9876;
       const devServerUrl = `http://localhost:${devServerPort}`;
 
@@ -59,7 +60,8 @@ export function activate(context: vscode.ExtensionContext) {
       const bundler = new ParcelBundler(PARCEL_HTML_ROOT_PATH, {
         minify: false,
       });
-      server = bundler.serve(devServerPort, false) as http.Server;
+
+      server = await bundler.serve(devServerPort, false);
 
       const panel = vscode.window.createWebviewPanel(
         // Identifies the type of the webview. Used internally
@@ -105,91 +107,4 @@ function getCurrentFilePath() {
   }
 
   return filePath;
-}
-
-function makeWebviewHtml(src: string) {
-  return `<!DOCTYPE html>
-		<html lang="en">
-			<head>
-				<meta charset="UTF-8" />
-				<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-				<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-			</head>
-			<style>
-        html, body {
-          height: 100%;
-        }  
-        body {
-          margin: 0;
-          padding: 0;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-				}
-				iframe {
-					border: none;
-          width: 100%;
-          height: auto;
-          flex: 1;
-				}
-        footer {
-          padding: 0.5em;
-          font-family: 'Fira Code', 'Hack', Consolas, monospace;
-          background-color: #f5f6fa;
-          color: #2f3640;
-        }
-        a {
-          padding: 1px;
-          color: blue;
-        }
-        a:hover, a:focus {
-          color: white;
-          background: black;
-        }
-			</style>
-      <body>
-        <iframe src="${src}"></iframe>
-        <footer>
-          <a href="${src}">${src}</a>
-        </footer>  
-      </body>
-      <script>
-      (function() {
-          const vscode = acquireVsCodeApi();
-          vscode.postMessage({
-              command: 'log',
-              text: \`Preview launched. Opening ${src} in the iframe.\`
-          });
-      })();
-      </script>
-		</html>
-	`;
-}
-
-function makeParcelRootHtml(codePath: string, title = "Parcel Preview") {
-  return `<!DOCTYPE html>
-    <html lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>${title}</title>
-
-        <style>
-          html, body {
-            height: 100%;
-          }  
-          body {
-            margin: 0;
-          }
-        </style>
-      </head>
-    
-      <body>
-        <div id="root"></div>
-        <script src="${codePath}"></script>
-      </body>
-
-    </html>
-  `;
 }

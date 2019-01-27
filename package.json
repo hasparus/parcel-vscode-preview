@@ -37,6 +37,7 @@
     "typescript": "^3.1.4"
   },
   "dependencies": {
+    "tagged-template-noop": "^2.1.0",
     "parcel-bundler-without-deasync": "^9.99.10",
     "slash": "^2.0.0",
     "vscode": "*"
