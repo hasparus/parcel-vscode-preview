@@ -1,25 +1,35 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
-import { stat as fsStat } from "fs";
-import { promisify } from "util";
 import * as path from "path";
 import ParcelBundler = require("parcel-bundler-without-deasync");
 import * as http from "http";
 import * as fs from "fs";
 import slash from "slash";
+
 import { makeWebviewHtml, makeParcelRootHtml } from "./html";
 
-const stat = promisify(fsStat);
-
+// Config
 const PARCEL_HTML_ROOT_PATH = slash(
   path.join(__dirname, "..", "test", "index.html")
 );
+const devServerPort = 9876;
+const devServerUrl = `http://localhost:${devServerPort}`;
+const rootDir = PARCEL_HTML_ROOT_PATH.replace("index.html", "");
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+// State
+let server: http.Server | undefined;
 
-let server: http.Server | null = null;
+function disposeServer() {
+  server!.close();
+  server = undefined;
+}
+
+function writeToParcelHtmlRoot(relativePath: string) {
+  fs.writeFileSync(PARCEL_HTML_ROOT_PATH, makeParcelRootHtml(relativePath), {
+    encoding: "utf-8",
+  });
+}
 
 export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (console.log) and errors (console.error)
@@ -28,9 +38,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("currentModulePreview.start", async () => {
-      const devServerPort = 9876;
-      const devServerUrl = `http://localhost:${devServerPort}`;
-
       const userFilePath = getCurrentFilePath();
       if (!userFilePath) {
         vscode.window.showErrorMessage(
@@ -40,39 +47,34 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      // Make relative path to insert in root index.html
-      const rootDir = PARCEL_HTML_ROOT_PATH.replace("index.html", "");
       const relativePath = slash(path.relative(rootDir, userFilePath));
-      console.log({
-        rootDir,
-        relativePath,
-      });
+      writeToParcelHtmlRoot(relativePath);
 
-      // Create parcel root index.html
-      fs.writeFileSync(
-        PARCEL_HTML_ROOT_PATH,
-        makeParcelRootHtml(relativePath),
-        {
-          encoding: "utf-8",
+      if (!server) {
+        const bundler = new ParcelBundler(PARCEL_HTML_ROOT_PATH, {
+          minify: false,
+        });
+
+        server = await bundler.serve(devServerPort, false);
+      }
+
+      const panel = vscode.window.createWebviewPanel(
+        "currentModulePreview",
+        `${path.basename(relativePath)} 👀`,
+        vscode.ViewColumn.Two,
+        { enableScripts: true }
+      );
+
+      const activeEditorListener = vscode.window.onDidChangeActiveTextEditor(
+        x => {
+          console.log("ACTIVE TEXT EDITOR", x);
         }
       );
 
-      const bundler = new ParcelBundler(PARCEL_HTML_ROOT_PATH, {
-        minify: false,
+      panel.onDidDispose(e => {
+        disposeServer();
+        activeEditorListener.dispose();
       });
-
-      server = await bundler.serve(devServerPort, false);
-
-      const panel = vscode.window.createWebviewPanel(
-        // Identifies the type of the webview. Used internally
-        "currentModulePreview",
-        // Title of the panel displayed to the user
-        `${path.basename(relativePath)} 👀`,
-        vscode.ViewColumn.Two, // Editor column to show the new webview panel in.
-        {
-          enableScripts: true,
-        } // Webview options. More on these later.
-      );
 
       panel.webview.html = makeWebviewHtml(devServerUrl);
       // panel.webview.onDidReceiveMessage(
@@ -90,7 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
 // this method is called when your extension is deactivated
 export function deactivate() {
   if (server) {
-    server.close();
+    disposeServer();
   }
 }
 
