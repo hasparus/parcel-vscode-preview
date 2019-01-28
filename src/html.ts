@@ -16,6 +16,7 @@ export function makeWebviewHtml(src: string) {
           height: 100%;
         }
         body {
+          background: var(--background-color);
           margin: 0;
           padding: 0;
           overflow: hidden;
@@ -24,39 +25,113 @@ export function makeWebviewHtml(src: string) {
         }
         iframe {
           border: none;
-          width: 100%;
-          height: auto;
-          flex: 1;
+          z-index: 1;
         }
         footer {
           padding: 0.5em;
           font-family: "Fira Code", "Hack", Consolas, monospace;
-          background-color: #f5f6fa;
-          color: #2f3640;
+          background-color: var(--background-color);
+          color: var(--color);
+          border: 1px solid var(--vscode-activityBar-border);
         }
         a {
           padding: 1px;
-          color: blue;
+          color: var(--link-color);
         }
         a:hover,
         a:focus {
-          color: white;
-          background: black;
+          color: var(--link-active-color);
+        }
+
+        .full-size {
+          width: 100%;
+          flex: 1;
+          position: relative;
+        }
+
+        .layer {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
+
+        @keyframes rotate {
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+
+        .center {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .spinner {
+          width: 50px;
+          height: 50px;
+          animation: rotate linear 4s infinite;
+        }
+        .spinner::after {
+          display: block;
+          content: "";
+          overflow: hidden;
+          box-sizing: border-box;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          border: 4px solid transparent;
+          border-top-color: var(--color);
+
+          animation: rotate 1s infinite;
         }
       </style>
       <body>
-        <iframe src="${src}"></iframe>
+        <main class="full-size">
+          <iframe class="layer" src="${src}"></iframe>
+          <div id="placeholder" class="center layer" />
+        </main>
         <footer><a href="${src}">${src}</a></footer>
       </body>
-      <script>
+      <script defer>
+        const placeholder = document.getElementById("placeholder");
+        const state /*: 'STARTING' | 'LOADING' | 'NOT_SURE' */ = "STARTING";
+
+        function setState(newState) {
+          switch (newState) {
+            case "STARTING":
+              placeholder.innerHTML = "";
+              setTimeout(() => {
+                setState("LOADING");
+              }, 300);
+              break;
+
+            case "LOADING":
+              placeholder.innerHTML = '<div class="spinner" />';
+              setTimeout(() => {
+                setState("NOT_SURE");
+              }, 1500);
+              break;
+
+            case "NOT_SURE":
+              placeholder.innerHTML =
+                "Hmm... I'm not sure this file modifies the DOM 🤔";
+              break;
+          }
+        }
+
+        setState("STARTING");
+      </script>
+      <!-- <script>
         (function() {
             const vscode = acquireVsCodeApi();
-            vscode.postMessage({
+            vscode.postMessage({  
                 command: 'log',
                 text: \`Preview launched. Opening ${src} in the iframe.\`
             });
         })();
-      </script>
+      </script> -->
     </html>
   `;
 }
@@ -84,6 +159,10 @@ export function makeParcelRootHtml(codePath: string, title = "Parcel Preview") {
 
       <body>
         <div id="root"></div>
+        <script>
+          console.log("${codePath}");
+          window.postMessage;
+        </script>
         <script src="${codePath}"></script>
       </body>
     </html>

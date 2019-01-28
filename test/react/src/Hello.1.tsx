@@ -3,6 +3,6 @@ import { render } from "react-dom";
 
 import "./styles.scss";
 
-const Hello = () => <main>Haa!</main>;
+const Hello = () => <main>Ho!</main>;
 
 render(<Hello />, document.getElementById("root"));
