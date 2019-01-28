@@ -89,14 +89,19 @@ export function makeWebviewHtml(src: string) {
       </style>
       <body>
         <main class="full-size">
-          <iframe class="layer" src="${src}"></iframe>
+          <iframe
+            class="layer"
+            src="${src}"
+            onload="setState('LOADED')"
+          ></iframe>
           <div id="placeholder" class="center layer" />
         </main>
         <footer><a href="${src}">${src}</a></footer>
       </body>
       <script defer>
         const placeholder = document.getElementById("placeholder");
-        const state /*: 'STARTING' | 'LOADING' | 'NOT_SURE' */ = "STARTING";
+        /* type State = 'STARTING' | 'LOADING' | 'NOT_SURE' | 'LOADED' */
+        let state = "STARTING";
 
         function setState(newState) {
           switch (newState) {
@@ -105,33 +110,48 @@ export function makeWebviewHtml(src: string) {
               setTimeout(() => {
                 setState("LOADING");
               }, 300);
+
               break;
 
             case "LOADING":
+              if (state !== "STARTING") {
+                return;
+              }
+
               placeholder.innerHTML = '<div class="spinner" />';
               setTimeout(() => {
                 setState("NOT_SURE");
               }, 1500);
+
               break;
 
             case "NOT_SURE":
+              if (state !== "LOADING") {
+                return;
+              }
+
+              // Doesn't work. I'd have to watch #root or body with mutation observer.
               placeholder.innerHTML =
                 "Hmm... I'm not sure this file modifies the DOM 🤔";
+
+              break;
+
+            case "LOADED":
+              placeholder.innerHTML = "";
               break;
           }
+          console.log("Current Module View Webview:", { state, newState });
+          state = newState;
         }
 
         setState("STARTING");
+        window.addEventListener("message", ({ data }) => {
+          if (data.type === "current-path") {
+            console.log("Current path is", data.payload);
+            if (data.pa)
+          }
+        });
       </script>
-      <!-- <script>
-        (function() {
-            const vscode = acquireVsCodeApi();
-            vscode.postMessage({  
-                command: 'log',
-                text: \`Preview launched. Opening ${src} in the iframe.\`
-            });
-        })();
-      </script> -->
     </html>
   `;
 }
@@ -160,8 +180,13 @@ export function makeParcelRootHtml(codePath: string, title = "Parcel Preview") {
       <body>
         <div id="root"></div>
         <script>
-          console.log("${codePath}");
-          window.postMessage;
+          window.parent.postMessage(
+            {
+              type: "current-path",
+              payload: "${codePath}",
+            },
+            "*"
+          );
         </script>
         <script src="${codePath}"></script>
       </body>

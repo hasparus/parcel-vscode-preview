@@ -6,3 +6,4 @@ import "./styles.scss";
 const Hello = () => <main>Ho!</main>;
 
 render(<Hello />, document.getElementById("root"));
+

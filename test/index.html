@@ -21,10 +21,15 @@
       <body>
         <div id="root"></div>
         <script>
-          console.log("react/src/Hello.1.tsx");
-          window.postMessage;
+          window.parent.postMessage(
+            {
+              type: "current-path",
+              payload: "react/package.json",
+            },
+            "*"
+          );
         </script>
-        <script src="react/src/Hello.1.tsx"></script>
+        <script src="react/package.json"></script>
       </body>
     </html>
   
