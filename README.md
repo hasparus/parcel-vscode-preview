@@ -2,6 +2,8 @@
 
 Run Parcel dev server on current file and execute side effects inside HTML document.
 
+![](./animation.gif)
+
 ## Features
 
 - Render current file
