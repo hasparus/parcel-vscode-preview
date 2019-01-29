@@ -1,4 +1,4 @@
-# current-module-preview README
+# Current Module Preview
 
 Run Parcel dev server on current file and execute side effects inside HTML document.
 
@@ -6,13 +6,17 @@ Run Parcel dev server on current file and execute side effects inside HTML docum
 
 - Render current file
 
-The main reason of this extension is to replicate **Current Module View** feature from CodeSandbox inside of VSCode.
+The main goal of this extension is to replicate **Current Module View** feature from CodeSandbox inside of VSCode.
 
-### Usage
+## Usage
 
-Run `Preview current module` command in a file that writes to the DOM.
+Run `Preview Current Module 📃👀` command in a file that writes to the DOM.
 
 We're using Parcel to allow importing JavaScript, TypeScript, Reason and all of the stuff Parcel just gets with no config.
+
+## Roadmap
+
+- [] Improve React experience -- ReactDOM.render default export if `currentModulePreview.mode: "react"` is set
 
 <!-- > Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow. -->
 
