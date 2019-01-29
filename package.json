@@ -1,7 +1,7 @@
 {
-  "name": "parcel-vscode-preview",
-  "displayName": "Parcel Preview",
-  "description": "Get CodeSandbox Current Module View inside of your VSCode",
+  "name": "current-module-preview",
+  "displayName": "Current Module Preview 📃👀",
+  "description": "Mount current module as Parcel root inside of HTML file",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.30.0"
