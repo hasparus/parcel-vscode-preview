@@ -2,6 +2,7 @@
   "name": "current-module-preview",
   "displayName": "Current Module Preview 📃👀",
   "description": "Mount current module as Parcel root inside of HTML file",
+  "publisher": "hasparus",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.30.0"
@@ -23,6 +24,7 @@
   },
   "scripts": {
     "vscode:prepublish": "yarn run compile",
+    "vscode:publish": "vsce publish",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
@@ -34,12 +36,12 @@
     "@types/parcel-bundler": "^1.10.1",
     "@types/slash": "^2.0.0",
     "tslint": "^5.8.0",
-    "typescript": "^3.1.4"
+    "typescript": "^3.1.4",
+    "vscode": "*"
   },
   "dependencies": {
     "tagged-template-noop": "^2.1.0",
     "parcel-bundler-without-deasync": "^9.99.10",
-    "slash": "^2.0.0",
-    "vscode": "*"
+    "slash": "^2.0.0"
   }
 }
