@@ -1,3 +1,13 @@
+# Disclaimer
+
+## I'm currently not working on it so it probably doesn't work 😔
+
+Check out 
+
+- [VSCode MDX Preview](https://github.com/xyc/vscode-mdx-preview)
+- [VSCode Browser Preview](https://t.co/z5vTIYZU7R)
+
+
 # Current Module Preview
 
 Run Parcel dev server on current file and execute side effects inside HTML document.
@@ -33,9 +43,6 @@ This extension contributes the following settings:
 - `myExtension.enable`: enable/disable this extension
 - `myExtension.thing`: set to `blah` to do something -->
 
-## What else is fun
-
-- [VSCode Browser Preview](https://t.co/z5vTIYZU7R)
 
 <!-- ## Release Notes
 
